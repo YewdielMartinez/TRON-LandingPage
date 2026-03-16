@@ -49,6 +49,7 @@ export const useDialogTransition = () => {
       await viewTransition.finished;
       originElement.style.viewTransitionName = "";
       originElement.style.viewTransitionClass = "";
+      originElement.style.opacity = "0"; // Keep origin hidden while modal is open
       if (dialogIcon) dialogIcon.style.viewTransitionName = "";
     },
     [],
@@ -60,12 +61,6 @@ export const useDialogTransition = () => {
     const originElement = originButtonRef.current;
 
     if (!dialog) return;
-
-    // Asegurar que el elemento origen esté visible inmediatamente
-    if (originElement) {
-      originElement.removeAttribute("origin-element");
-      originElement.style.opacity = "";
-    }
 
     if (!originElement) {
       dialog.close();
@@ -97,6 +92,9 @@ export const useDialogTransition = () => {
     }
 
     const viewTransition = document.startViewTransition(() => {
+      // Create new state for closing:
+      // The modal closes and the origin element reappears.
+      originElement.style.opacity = "1";
       originElement.style.viewTransitionName = "vt-shared";
       originElement.style.viewTransitionClass = viewTransitionClassClosing;
       if (originIcon) originIcon.style.viewTransitionName = "vt-icon";
