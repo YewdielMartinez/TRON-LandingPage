@@ -1,0 +1,104 @@
+import { useState, useEffect } from 'react'
+import { useLanguage } from '../hooks/useLanguage'
+import { DOCS_DATA } from '../data/docs'
+import { COMMONS } from '../data/translations'
+
+export function Docs() {
+  const { lang } = useLanguage()
+  const data = DOCS_DATA[lang]
+  const commons = COMMONS[lang]
+
+  // Default to first item. Reset when language changes so we don't hold an invalid ID.
+  const [activeId, setActiveId] = useState(data[0].items[0].id)
+
+  useEffect(() => {
+    // Si cambiamos de idioma, el ID podría ser el mismo, 
+    // pero por seguridad aseguramos que exista en el nuevo idioma.
+    const exists = data.some(cat => cat.items.some(item => item.id === activeId))
+    if (!exists) setActiveId(data[0].items[0].id)
+  }, [lang, data, activeId])
+
+
+  let activeCategoryName = ''
+  let activeItemTitle = ''
+  let activeContent = null as any
+
+  data.forEach(cat => {
+    cat.items.forEach(item => {
+      if (item.id === activeId) {
+        activeCategoryName = cat.category
+        activeItemTitle = item.title
+        activeContent = item.content
+      }
+    })
+  })
+
+  return (
+    <div style={{ display: 'flex', minHeight: 'calc(100vh - 56px)' }}>
+      {/* Sidebar */}
+      <aside className="page-sidebar" style={{
+        width: 260, borderRight: '1px solid var(--border)', padding: '32px 24px',
+        display: 'flex', flexDirection: 'column', gap: 32, position: 'sticky', top: 56,
+        height: 'calc(100vh - 56px)', overflowY: 'auto'
+      }}>
+        {data.map(category => (
+          <div key={category.category}>
+            <h3 style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg)', opacity: 0.6, marginBottom: 12, letterSpacing: 1 }}>
+              {category.category}
+            </h3>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {category.items.map(item => {
+                const isActive = item.id === activeId
+                return (
+                  <li key={item.id}>
+                    <button
+                      onClick={() => setActiveId(item.id)}
+                      style={{
+                        width: '100%', textAlign: 'left', padding: '6px 12px', borderRadius: 6,
+                        border: 'none', backgroundColor: isActive ? 'var(--hover-bg)' : 'transparent',
+                        color: isActive ? 'var(--fg)' : 'var(--muted)',
+                        fontSize: 14, fontWeight: isActive ? 500 : 400,
+                        cursor: 'pointer', transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {item.title}
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))}
+      </aside>
+
+      {/* Main Content */}
+      <main style={{ flex: 1, padding: '48px 64px', maxWidth: 840 }}>
+        {activeContent && (
+          <div key={activeId} className="page-content-transition">
+            <p style={{ color: 'var(--faint)', fontSize: 13, marginBottom: 16 }}>
+              {commons.docsPath} / {activeCategoryName} / <span style={{ color: 'var(--fg)' }}>{activeItemTitle}</span>
+            </p>
+            <h1 style={{ fontSize: 36, fontWeight: 500, letterSpacing: '-0.03em', color: 'var(--fg)', marginBottom: 24 }}>
+              {activeContent.title}
+            </h1>
+            {activeContent.body.map((paragraph: string, i: number) => (
+              <p key={i} style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--muted)', marginBottom: 24 }}>
+                {paragraph}
+              </p>
+            ))}
+            {activeContent.sections.map((sec: any, i: number) => (
+              <div key={i}>
+                <h2 style={{ fontSize: 24, fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--fg)', marginTop: 48, marginBottom: 16 }}>
+                  {sec.subtitle}
+                </h2>
+                <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--muted)', marginBottom: 24 }}>
+                  {sec.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  )
+}
