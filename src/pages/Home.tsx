@@ -2,10 +2,8 @@ import { useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../hooks/useLanguage'
 import { HOME_DATA } from '../data/translations'
-import gsap from 'gsap'
+import { gsap } from '../lib/gsap'
 import { useGSAP } from '@gsap/react'
-
-gsap.registerPlugin(useGSAP)
 
 export function Home() {
   const { lang } = useLanguage()
