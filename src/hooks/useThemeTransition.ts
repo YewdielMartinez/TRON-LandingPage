@@ -1,9 +1,6 @@
 import { useCallback } from "react";
-import type {
-  ThemeMode,
-  ThemeName,
-  Font,
-} from "../lib/preferences/preferences-config";
+
+type ThemeValue = string;
 
 /**
  * Hook para aplicar transiciones visuales suaves al cambiar temas, modos o fuentes.
@@ -15,8 +12,8 @@ export const useThemeTransition = () => {
    */
   const changeThemeWithTransition = useCallback(
     async (
-      setter: (value: ThemeName | ThemeMode | Font) => void,
-      value: ThemeName | ThemeMode | Font,
+      setter: (value: ThemeValue) => void,
+      value: ThemeValue,
     ) => {
       if (!document.startViewTransition) {
         // Fallback para navegadores sin soporte
