@@ -3,21 +3,32 @@ import { useLanguage } from '../hooks/useLanguage'
 import { DOCS_DATA } from '../data/docs'
 import { COMMONS } from '../data/translations'
 
+const codeBlockStyle: React.CSSProperties = {
+  background: '#0d0d0d',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 8,
+  padding: '16px 20px',
+  fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, monospace",
+  fontSize: 13,
+  lineHeight: 1.7,
+  color: '#c9d1d9',
+  overflowX: 'auto',
+  whiteSpace: 'pre',
+  marginBottom: 24,
+  display: 'block',
+}
+
 export function Docs() {
   const { lang } = useLanguage()
   const data = DOCS_DATA[lang]
   const commons = COMMONS[lang]
 
-  // Default to first item. Reset when language changes so we don't hold an invalid ID.
   const [activeId, setActiveId] = useState(data[0].items[0].id)
 
   useEffect(() => {
-    // Si cambiamos de idioma, el ID podría ser el mismo, 
-    // pero por seguridad aseguramos que exista en el nuevo idioma.
     const exists = data.some(cat => cat.items.some(item => item.id === activeId))
     if (!exists) setActiveId(data[0].items[0].id)
   }, [lang, data, activeId])
-
 
   let activeCategoryName = ''
   let activeItemTitle = ''
@@ -81,19 +92,28 @@ export function Docs() {
             <h1 style={{ fontSize: 36, fontWeight: 500, letterSpacing: '-0.03em', color: 'var(--fg)', marginBottom: 24 }}>
               {activeContent.title}
             </h1>
+
             {activeContent.body.map((paragraph: string, i: number) => (
               <p key={i} style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--muted)', marginBottom: 24 }}>
                 {paragraph}
               </p>
             ))}
+
             {activeContent.sections.map((sec: any, i: number) => (
               <div key={i}>
-                <h2 style={{ fontSize: 24, fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--fg)', marginTop: 48, marginBottom: 16 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg)', marginTop: 40, marginBottom: 12 }}>
                   {sec.subtitle}
                 </h2>
-                <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--muted)', marginBottom: 24 }}>
-                  {sec.text}
-                </p>
+                {sec.text && (
+                  <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--muted)', marginBottom: sec.code ? 12 : 24 }}>
+                    {sec.text}
+                  </p>
+                )}
+                {sec.code && (
+                  <pre style={codeBlockStyle}>
+                    <code>{sec.code}</code>
+                  </pre>
+                )}
               </div>
             ))}
           </div>

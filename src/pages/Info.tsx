@@ -3,6 +3,21 @@ import { useLanguage } from '../hooks/useLanguage'
 import { INFO_DATA } from '../data/info'
 import { COMMONS } from '../data/translations'
 
+const codeBlockStyle: React.CSSProperties = {
+  background: '#0d0d0d',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 8,
+  padding: '16px 20px',
+  fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, monospace",
+  fontSize: 13,
+  lineHeight: 1.7,
+  color: '#c9d1d9',
+  overflowX: 'auto',
+  whiteSpace: 'pre',
+  marginBottom: 24,
+  display: 'block',
+}
+
 export function Info() {
   const { lang } = useLanguage()
   const data = INFO_DATA[lang]
@@ -14,7 +29,6 @@ export function Info() {
     const exists = data.some(cat => cat.items.some(item => item.id === activeId))
     if (!exists) setActiveId(data[0].items[0].id)
   }, [lang, data, activeId])
-
 
   let activeCategoryName = ''
   let activeItemTitle = ''
@@ -78,12 +92,31 @@ export function Info() {
             <h1 style={{ fontSize: 36, fontWeight: 500, letterSpacing: '-0.03em', color: 'var(--fg)', marginBottom: 24 }}>
               {activeContent.title}
             </h1>
+
             {activeContent.body.map((paragraph: string, i: number) => (
               <p key={i} style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--muted)', marginBottom: 24 }}>
                 {paragraph}
               </p>
             ))}
-            
+
+            {activeContent.sections?.map((sec: any, i: number) => (
+              <div key={i}>
+                <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg)', marginTop: 40, marginBottom: 12 }}>
+                  {sec.subtitle}
+                </h2>
+                {sec.text && (
+                  <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--muted)', marginBottom: sec.code ? 12 : 24 }}>
+                    {sec.text}
+                  </p>
+                )}
+                {sec.code && (
+                  <pre style={codeBlockStyle}>
+                    <code>{sec.code}</code>
+                  </pre>
+                )}
+              </div>
+            ))}
+
             {activeContent.callout && (
               <div style={{ marginTop: 48, padding: 24, borderRadius: 12, border: '1px solid var(--border)', backgroundColor: 'var(--hover-bg)' }}>
                 <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg)', marginBottom: 8 }}>
