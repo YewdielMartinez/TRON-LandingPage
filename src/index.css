@@ -9,6 +9,12 @@
   --faint:     rgba(0,0,0,0.22);
   --border:    rgba(0,0,0,0.10);
   --hover-bg:  rgba(0,0,0,0.04);
+
+  --tron-cyan:   #0077aa;
+  --tron-border: rgba(0, 119, 170, 0.22);
+  --tron-bg:     rgba(0, 100, 140, 0.04);
+  --tron-glow:   rgba(0, 119, 170, 0.04);
+  --tron-prompt: rgba(0, 119, 170, 0.40);
 }
 
 html.dark {
@@ -19,6 +25,12 @@ html.dark {
   --border:    rgba(255,255,255,0.10);
   --hover-bg:  rgba(255,255,255,0.04);
   color-scheme: dark;
+
+  --tron-cyan:   #00f0ff;
+  --tron-border: rgba(0, 240, 255, 0.18);
+  --tron-bg:     rgba(0, 240, 255, 0.03);
+  --tron-glow:   rgba(0, 240, 255, 0.08);
+  --tron-prompt: rgba(0, 240, 255, 0.38);
 }
 
 /* ── Base ────────────────────────────────────────────── */
