@@ -1,20 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { fileURLToPath } from 'node:url'
 
 // https://vite.dev/config/
+// loon-core se consume desde npm (node_modules), no por alias local.
+// Para iterar contra ../LOON sin republicar, reactiva el alias temporalmente.
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      // La librería loon-core vive en el repo hermano ../LOON (build dist ESM).
-      'loon-core': fileURLToPath(new URL('../LOON/dist/index.mjs', import.meta.url)),
-    },
-  },
-  server: {
-    // Permitir a Vite leer fuera de la raíz del proyecto (../LOON/dist).
-    fs: { allow: ['..'] },
-  },
   build: {
     sourcemap: false,
     chunkSizeWarningLimit: 600,
