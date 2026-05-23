@@ -103,7 +103,7 @@ export function Navbar({ isDark, onToggleTheme }: Props) {
       {/* ── Full bar ── */}
       <div className={`navbar-bar${barShadow ? ' bar-shadow' : ''}${pillVisible ? ' bar-hidden' : ''}`}>
         <div className="navbar-bar-inner">
-          <Link to="/" className="navbar-logo">TRON</Link>
+          <Link to="/" className="navbar-logo">LOON</Link>
 
           <div className="navbar-links">
             {navLinks.map(({ label, href }) => (

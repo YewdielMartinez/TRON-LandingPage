@@ -5,17 +5,32 @@ export const INFO_DATA = {
       items: [
         {
           id: 'about',
-          title: 'Acerca de TRON',
+          title: 'Acerca de LOON',
           content: {
             title: 'Acerca del Proyecto',
             body: [
-              'El aumento del uso de Modelos de Lenguaje Grandes (LLMs) ha creado un cuello de botella fundamental: el costo por token y los límites de contexto. Cuando tu JSON pesa 100KB, pagas por 100KB de tokens, aunque el 80% sean llaves y estructura repetida.',
-              'TRON nació como una solución de ingeniería de software para abordar directamente la redundancia estructural extrema que ocurre cuando herramientas o APIs interactúan con LLMs usando formato JSON estándar.',
-              'El resultado: con TRON, ese JSON de 100KB baja a ~2KB en datasets con alta repetición. Pagas hasta 50× menos en la API. El modelo responde más rápido. Y puede "recordar" 50× más datos dentro de su ventana de contexto.',
+              'El uso creciente de Modelos de Lenguaje Grandes (LLMs) creó un cuello de botella: el costo por token y los límites de ventana de contexto. Cuando tu JSON pesa 100KB, pagas por 100KB de tokens, aunque buena parte sean llaves y estructura repetida.',
+              'LOON (LLM-Optimized Object Notation) es una librería de serialización que comprime datos estructurados a un formato denso y, en su modo legible, auto-evidente para los modelos. Define la estructura una sola vez y transmite solo valores; el decoder reconstruye el JSON original sin pérdida.',
+              'No es un servicio ni un sistema con base de datos: es un paquete npm (loon-core) que instalas y corre en navegador, edge o Node. Este sitio es la documentación + un playground de demostración.',
             ],
             callout: {
-              title: '¿Por qué un Middleware?',
-              text: 'Un middleware permite interponer la transpilación sin requerir que las aplicaciones existentes cambien su código base. Siguen enviando JSON, pero el costo de red se reduce drásticamente en el "puente". Zero cambios del lado del cliente.',
+              title: 'Tres modos, un fallback',
+              text: 'full = máxima compresión (acompaña con getSpec()). llm = legible y auto-evidente, sirve a modelos de nube y locales. compact = datos chicos / no-uniformes. compat = fallback JSON-hybrid universal ante cualquier forma rara.',
+            },
+          },
+        },
+        {
+          id: 'team',
+          title: 'Acerca de Nosotros',
+          content: {
+            title: 'Equipo y Contexto',
+            body: [
+              'LOON es un trabajo de tesis enfocado en evaluar la compresión semántica de datos estructurados para pipelines de LLM. El objetivo es medir, de forma reproducible, cuántos tokens se ahorran frente a JSON y otros formatos como TOON, manteniendo la fidelidad del round-trip.',
+              'El proyecto se compone de la librería loon-core (el protocolo y su codec), una suite de benchmarks (comprehension-benchmark) y este sitio de demostración construido con React + Tailwind CSS.',
+            ],
+            callout: {
+              title: 'Alcance honesto',
+              text: 'LOON es una librería, no una plataforma transaccional. No requiere base de datos: los experimentos corren sobre un dataset estático de archivos JSON de distinta complejidad.',
             },
           },
         },
@@ -25,27 +40,12 @@ export const INFO_DATA = {
           content: {
             title: 'La Redundancia del JSON',
             body: [
-              'En JSON estándar, si tienes 1,000 registros, el nombre del campo "name" se repite 1,000 veces. Solo esa clave desperdicia 1,000 × 8 bytes = 8,000 bytes. Multiplica eso por 10-20 campos típicos y estás pagando por ~100KB de estructura que no es dato.',
-              'Cada vez que la IA devuelve un objeto complejo, gasta en promedio el 40% de los tokens solo devolviendo llaves repetitivas ("nombre:", "id:", "status:"). A gran escala, esto es dinero tirado a la basura.',
-              'TRON elimina esta redundancia en la capa de transporte: define la estructura una sola vez, transmite solo valores, y el decoder reconstruye el JSON original sin pérdida de un solo bit.',
+              'En JSON estándar, 1000 registros repiten cada nombre de campo 1000 veces. Multiplica por 10-20 campos típicos y gran parte del payload es estructura, no dato.',
+              'Cada token cuesta dinero y consume ventana de contexto. LOON elimina la redundancia en la capa de transporte: estructura una vez, valores densos, reconstrucción exacta.',
             ],
             callout: {
-              title: 'El cálculo real',
-              text: 'Dataset REPETITIVE de 1,000 registros: JSON original = 71,716 bytes. TRON HYPER = 1,361 bytes. Ratio = 98% de reducción. En términos de costo API: si pagas $10 por ese dataset en JSON, con TRON pagas $0.20.',
-            },
-          },
-        },
-        {
-          id: 'versions',
-          title: 'Versiones',
-          content: {
-            title: 'Historial de Versiones',
-            body: [
-              'TRON ha evolucionado iterativamente desde su concepto inicial hasta el protocolo HYPER actual. Cada versión mayor agrega capas de compresión sin romper compatibilidad hacia atrás.',
-            ],
-            callout: {
-              title: 'Versión actual: v3.5 (HYPER)',
-              text: 'v2.5 introdujo Schema Header, Base36 y Prefix Seeding (modo ULTRA). v3.0 estandarizó la arquitectura Stateful y el Block-Mode. v3.5 agrega Constants, Sequences, Defaults, RLE y Null Sentinel (modo HYPER), alcanzando 98% de reducción en datasets repetitivos.',
+              title: 'Round-trip garantizado',
+              text: 'fromLOON() reconstruye el JSON original. Para salidas generadas por el LLM, validateDecode() verifica contra el esquema y repairHint() genera una pista mínima de reintento.',
             },
           },
         },
@@ -60,11 +60,11 @@ export const INFO_DATA = {
           content: {
             title: 'Resultados del Benchmark',
             body: [
-              'Los benchmarks miden reducción en bytes (longitud de string), no en tokens estimados. Esto garantiza resultados verificables de forma directa con cualquier herramienta. Ejecuta "npm run benchmark" para reproducir los números con datos reales.',
+              'Los benchmarks miden reducción de tokens (gpt-tokenizer y Gemini countTokens), tamaño de mensaje, throughput/latencia, fidelidad round-trip y accuracy en LLM. Se corren sobre datasets JSON reales en benchmarks/data.',
             ],
             callout: {
-              title: 'Resultados actuales (v3.5)',
-              text: 'REPETITIVE 1,000 registros: JSON 71,716 bytes → HYPER 1,361 bytes → 98% reducción. DIVERSE 1,000 registros: JSON 93,213 bytes → HYPER 8,156 bytes → 91% reducción. MEDIUM 50 registros: JSON 4,130 bytes → HYPER 606 bytes → 85% reducción. SMALL 3 registros (LITE): JSON 116 bytes → LITE 97 bytes → 16% reducción.',
+              title: 'Resultados de referencia',
+              text: 'Dataset tabular de 50 registros (gpt-tokenizer): JSON = 1463 tokens. full = 315 tokens (−78%). llm = 824 tokens (−44%). El modo full maximiza la reducción; el modo llm prioriza legibilidad sin spec.',
             },
           },
         },
@@ -74,13 +74,12 @@ export const INFO_DATA = {
           content: {
             title: 'Cómo se Calculan los Porcentajes',
             body: [
-              'La fórmula central es: reduction% = Math.round((1 - outputBytes / inputBytes) * 100). Donde inputBytes = JSON.stringify(data).length y outputBytes = longitud del string TRON generado.',
-              'Ejemplo con dataset REPETITIVE (1,000 registros): inputBytes = 71,716. outputBytes = 1,361. ratio = 1,361 / 71,716 = 0.0190. reduction = 1 - 0.0190 = 0.9810. reduction% = Math.round(98.10) = 98%.',
-              'Regla de proporcionalidad: alta repetición de claves/valores → ratio bajo → reducción alta. Datos diversos/únicos → ratio alto → reducción moderada. La reducción mínima esperada es ~16% incluso en LITE con 3 registros.',
+              'reduction% = round((1 − tokensOut / tokensIn) × 100), donde tokensIn son los del JSON minificado y tokensOut los de la cadena LOON. El playground usa una estimación chars/4; los benchmarks usan tokenizadores reales.',
+              'Regla: alta repetición de claves/valores → reducción alta. Datos diversos/únicos → reducción moderada.',
             ],
             callout: {
               title: 'Verificación directa',
-              text: 'El script scripts/update-docs.ts imprime los bytes reales antes y después de cada transformación. Puedes auditar cada número del benchmark ejecutando el script y comparando con la salida en consola.',
+              text: 'Ejecuta los scripts de comprehension-benchmark (token-efficiency, multi-tokenizer, roundtrip-fidelity) para reproducir los números con datos reales.',
             },
           },
         },
@@ -88,14 +87,14 @@ export const INFO_DATA = {
           id: 'use-cases',
           title: 'Casos de Uso',
           content: {
-            title: 'Cuándo Usar TRON',
+            title: 'Cuándo Usar LOON',
             body: [
-              'TRON tiene mayor impacto cuando los datos tienen alta redundancia estructural: datasets tabulares, logs de eventos, respuestas de APIs REST con esquemas fijos, telemetría de IoT, inventarios de productos, registros de usuarios.',
-              'El impacto es menor (pero aún positivo) en datos heterogéneos como documentos de texto libre, esquemas altamente variables o respuestas con un solo registro. Para esos casos, el modo LITE sigue siendo más eficiente que JSON en la mayoría de los escenarios.',
+              'Mayor impacto con alta redundancia estructural: datasets tabulares, logs de eventos, respuestas de APIs REST con esquema fijo, telemetría, inventarios, registros de usuarios.',
+              'Para datos heterogéneos, un solo registro o esquemas muy variables, el modo compact sigue siendo más eficiente que JSON en la mayoría de los casos.',
             ],
             callout: {
               title: 'Regla práctica',
-              text: 'Si tu payload tiene más de 10 registros con el mismo esquema, TRON HYPER te dará al menos 80% de reducción. Si tienes 1,000+ registros con campos repetitivos, espera 90-98%. Para un solo registro, usa LITE: ~16% de ahorro sin overhead.',
+              text: 'Datos uniformes y consumo por LLM razonador → full + getSpec(). Modelos chicos/locales o legibilidad → llm. Pocos registros o forma irregular → compact (auto).',
             },
           },
         },
@@ -105,16 +104,17 @@ export const INFO_DATA = {
       category: 'Arquitectura',
       items: [
         {
-          id: 'efficiency-table',
-          title: 'Tabla de Eficiencia',
+          id: 'pipeline',
+          title: 'Pipeline',
           content: {
-            title: 'Impacto por Técnica',
+            title: 'Cómo Funciona',
             body: [
-              'Cada técnica de TRON apunta a un tipo específico de redundancia. La tabla muestra el impacto relativo de cada una en bytes eliminados por mensaje.',
+              'El núcleo es stateless: flatten → selectMode → encode. El encoder adaptativo analiza columnas (constantes, secuencias, fixed-point, diccionarios, array-schema), construye headers y comprime filas.',
+              'En decode, LOON auto-detecta el formato (JSON-hybrid, micro, adaptativo o compact), parsea headers y reconstruye filas, luego des-aplana a objetos anidados.',
             ],
             callout: {
-              title: 'Desglose por técnica',
-              text: 'Schema Decoupling: elimina repetición de nombres de claves (mayor impacto en datasets grandes). Block-Mode: elimina IDs de tabla por fila. Base36: compacta IDs y métricas numéricas ~50%. Prefix Seeding: compacta strings con raíces comunes. Constants: elimina columnas de valor fijo. Sequences: elimina columnas secuenciales. Defaults + Trailing Trim: omite valores frecuentes. RLE: colapsa filas repetidas a una línea.',
+              title: 'Fallback on-error',
+              text: 'La codificación va en try/catch: si el modo elegido falla con una forma rara, LOON cae automáticamente a compat (JSON-hybrid), garantizando que siempre haya salida válida.',
             },
           },
         },
@@ -124,12 +124,12 @@ export const INFO_DATA = {
           content: {
             title: 'Diagramas de Arquitectura',
             body: [
-              'Los diagramas PlantUML están en docs/diagrams/ y cubren tres vistas: estructura de clases (class-diagram.puml), modelo entidad-relación (er-diagram.puml) y flujo completo de encode/decode (flow-diagram.puml).',
-              'Para renderizarlos: usa la extensión PlantUML de VS Code, el servidor en línea de PlantUML, o ejecuta un servidor PlantUML local. Los diagramas se mantienen sincronizados con el código fuente manual y reflejan la arquitectura actual de v3.5.',
+              'Los diagramas PlantUML están en LOON/docs/diagrams/: arquitectura general y de núcleo, secuencia round-trip, flujo de procesamiento, clases, capas y el setup del dataset de benchmark.',
+              'Se renderizan con la extensión PlantUML de VS Code o un servidor PlantUML. Reflejan la arquitectura actual de 3 modos (full/llm/compact) + compat.',
             ],
             callout: {
-              title: 'Diagrama de flujo clave',
-              text: 'El flow-diagram.puml describe el ciclo completo: JSON de entrada → Encoder (State Check → Mode Detection → Header Generation → Row Emission) → string TRON → Decoder (Header Parse → StateManager → Row Reconstruction → Base36/Prefix expansion) → JSON de salida bit-idéntico al original.',
+              title: 'Vista clave',
+              text: 'El diagrama de secuencia round-trip resume el ciclo: toLOON() (flatten → selectMode → encode) → cadena LOON → fromLOON() (auto-detect → parse → reconstruct → unflatten) → JSON idéntico.',
             },
           },
         },
@@ -142,17 +142,32 @@ export const INFO_DATA = {
       items: [
         {
           id: 'about',
-          title: 'About TRON',
+          title: 'About LOON',
           content: {
             title: 'About the Project',
             body: [
-              'The surge in Large Language Model (LLM) adoption has created a fundamental bottleneck: cost per token and context limits. When your JSON weighs 100KB, you pay for 100KB of tokens, even though 80% of that is repeated keys and structure.',
-              'TRON was born as a software engineering solution to directly address the extreme structural redundancy that occurs when tools or APIs interact with LLMs using standard JSON format.',
-              'The result: with TRON, that 100KB JSON drops to ~2KB on high-repetition datasets. You pay up to 50× less on the API. The model responds faster. And it can "remember" 50× more data within its context window.',
+              'The rise of Large Language Models (LLMs) created a bottleneck: cost per token and context-window limits. When your JSON weighs 100KB, you pay for 100KB of tokens, even though much of it is repeated keys and structure.',
+              'LOON (LLM-Optimized Object Notation) is a serialization library that compresses structured data into a dense format that, in its readable mode, is self-evident to models. It declares the structure once and transmits only values; the decoder reconstructs the original JSON losslessly.',
+              "It is not a service or a database-backed system: it's an npm package (loon-core) you install and run in the browser, edge or Node. This site is the documentation + a demo playground.",
             ],
             callout: {
-              title: 'Why a Middleware?',
-              text: 'A middleware allows interposing the transpilation without requiring existing applications to change their codebase. They keep sending standard JSON, but the network payload is drastically reduced at the "bridge". Zero changes on the client side.',
+              title: 'Three modes, one fallback',
+              text: 'full = max compression (pair with getSpec()). llm = readable and self-evident, serving cloud and local models. compact = small / non-uniform data. compat = universal JSON-hybrid fallback for any odd shape.',
+            },
+          },
+        },
+        {
+          id: 'team',
+          title: 'About Us',
+          content: {
+            title: 'Team and Context',
+            body: [
+              'LOON is a thesis project focused on evaluating semantic compression of structured data for LLM pipelines. The goal is to measure, reproducibly, how many tokens are saved versus JSON and other formats like TOON, while preserving round-trip fidelity.',
+              'The project comprises the loon-core library (the protocol and codec), a benchmark suite (comprehension-benchmark), and this demo site built with React + Tailwind CSS.',
+            ],
+            callout: {
+              title: 'Honest scope',
+              text: 'LOON is a library, not a transactional platform. It needs no database: experiments run on a static dataset of JSON files of varying complexity.',
             },
           },
         },
@@ -162,27 +177,12 @@ export const INFO_DATA = {
           content: {
             title: 'JSON Redundancy',
             body: [
-              'In standard JSON, if you have 1,000 records, the field name "name" is repeated 1,000 times. That single key wastes 1,000 × 8 bytes = 8,000 bytes. Multiply that by 10-20 typical fields and you\'re paying for ~100KB of structure that isn\'t data.',
-              'Every time AI returns a complex object, it spends on average 40% of its tokens just echoing repetitive keys ("name:", "id:", "status:"). At scale, this is essentially throwing money away.',
-              'TRON eliminates this redundancy at the transport layer: defines the structure once, transmits only values, and the decoder reconstructs the original JSON without losing a single bit.',
+              'In standard JSON, 1000 records repeat every field name 1000 times. Multiply by 10-20 typical fields and much of the payload is structure, not data.',
+              'Every token costs money and consumes context window. LOON removes redundancy at the transport layer: structure once, dense values, exact reconstruction.',
             ],
             callout: {
-              title: 'The real math',
-              text: 'REPETITIVE dataset of 1,000 records: original JSON = 71,716 bytes. TRON HYPER = 1,361 bytes. Ratio = 98% reduction. In API cost terms: if you pay $10 for that dataset in JSON, with TRON you pay $0.20.',
-            },
-          },
-        },
-        {
-          id: 'versions',
-          title: 'Versions',
-          content: {
-            title: 'Version History',
-            body: [
-              'TRON has evolved iteratively from its initial concept to the current HYPER protocol. Each major version adds compression layers without breaking backward compatibility.',
-            ],
-            callout: {
-              title: 'Current version: v3.5 (HYPER)',
-              text: 'v2.5 introduced Schema Header, Base36, and Prefix Seeding (ULTRA mode). v3.0 standardized the Stateful architecture and Block-Mode. v3.5 adds Constants, Sequences, Defaults, RLE, and Null Sentinel (HYPER mode), reaching 98% reduction on repetitive datasets.',
+              title: 'Guaranteed round-trip',
+              text: 'fromLOON() reconstructs the original JSON. For LLM-generated output, validateDecode() checks against the schema and repairHint() builds a minimal retry hint.',
             },
           },
         },
@@ -197,11 +197,11 @@ export const INFO_DATA = {
           content: {
             title: 'Benchmark Results',
             body: [
-              'Benchmarks measure reduction in bytes (string length), not estimated tokens. This guarantees results that are directly verifiable with any tool. Run "npm run benchmark" to reproduce the numbers with real data.',
+              'Benchmarks measure token reduction (gpt-tokenizer and Gemini countTokens), message size, throughput/latency, round-trip fidelity and LLM accuracy. They run on real JSON datasets in benchmarks/data.',
             ],
             callout: {
-              title: 'Current results (v3.5)',
-              text: 'REPETITIVE 1,000 records: JSON 71,716 bytes → HYPER 1,361 bytes → 98% reduction. DIVERSE 1,000 records: JSON 93,213 bytes → HYPER 8,156 bytes → 91% reduction. MEDIUM 50 records: JSON 4,130 bytes → HYPER 606 bytes → 85% reduction. SMALL 3 records (LITE): JSON 116 bytes → LITE 97 bytes → 16% reduction.',
+              title: 'Reference results',
+              text: 'Tabular dataset of 50 records (gpt-tokenizer): JSON = 1463 tokens. full = 315 tokens (−78%). llm = 824 tokens (−44%). full maximizes reduction; llm prioritizes readability without a spec.',
             },
           },
         },
@@ -211,13 +211,12 @@ export const INFO_DATA = {
           content: {
             title: 'How Percentages Are Calculated',
             body: [
-              'The core formula is: reduction% = Math.round((1 - outputBytes / inputBytes) * 100). Where inputBytes = JSON.stringify(data).length and outputBytes = length of the generated TRON string.',
-              'Example with REPETITIVE dataset (1,000 records): inputBytes = 71,716. outputBytes = 1,361. ratio = 1,361 / 71,716 = 0.0190. reduction = 1 - 0.0190 = 0.9810. reduction% = Math.round(98.10) = 98%.',
-              'Proportionality rule: high key/value repetition → low ratio → high reduction. Diverse/unique data → high ratio → moderate reduction. Minimum expected reduction is ~16% even in LITE with 3 records.',
+              'reduction% = round((1 − tokensOut / tokensIn) × 100), where tokensIn is the minified JSON and tokensOut the LOON string. The playground uses a chars/4 estimate; the benchmarks use real tokenizers.',
+              'Rule: high key/value repetition → high reduction. Diverse/unique data → moderate reduction.',
             ],
             callout: {
               title: 'Direct verification',
-              text: 'The scripts/update-docs.ts script prints real bytes before and after each transformation. You can audit every benchmark number by running the script and comparing with the console output.',
+              text: 'Run the comprehension-benchmark scripts (token-efficiency, multi-tokenizer, roundtrip-fidelity) to reproduce the numbers with real data.',
             },
           },
         },
@@ -225,14 +224,14 @@ export const INFO_DATA = {
           id: 'use-cases',
           title: 'Use Cases',
           content: {
-            title: 'When to Use TRON',
+            title: 'When to Use LOON',
             body: [
-              'TRON has the greatest impact when data has high structural redundancy: tabular datasets, event logs, REST API responses with fixed schemas, IoT telemetry, product inventories, user records.',
-              'Impact is lower (but still positive) for heterogeneous data like free-form text documents, highly variable schemas, or single-record responses. For those cases, LITE mode is still more efficient than JSON in most scenarios.',
+              'Greatest impact with high structural redundancy: tabular datasets, event logs, fixed-schema REST API responses, telemetry, inventories, user records.',
+              'For heterogeneous data, a single record or highly variable schemas, compact mode is still more efficient than JSON in most scenarios.',
             ],
             callout: {
-              title: 'Practical rule of thumb',
-              text: 'If your payload has more than 10 records with the same schema, TRON HYPER will give you at least 80% reduction. If you have 1,000+ records with repetitive fields, expect 90-98%. For a single record, use LITE: ~16% savings with no overhead.',
+              title: 'Rule of thumb',
+              text: 'Uniform data and a reasoning LLM → full + getSpec(). Small/local models or readability → llm. Few records or irregular shape → compact (auto).',
             },
           },
         },
@@ -242,16 +241,17 @@ export const INFO_DATA = {
       category: 'Architecture',
       items: [
         {
-          id: 'efficiency-table',
-          title: 'Efficiency Table',
+          id: 'pipeline',
+          title: 'Pipeline',
           content: {
-            title: 'Impact per Technique',
+            title: 'How It Works',
             body: [
-              'Each TRON technique targets a specific type of redundancy. The breakdown shows the relative impact of each one in bytes eliminated per message.',
+              'The core is stateless: flatten → selectMode → encode. The adaptive encoder analyzes columns (constants, sequences, fixed-point, dictionaries, array-schema), builds headers and compresses rows.',
+              'On decode, LOON auto-detects the format (JSON-hybrid, micro, adaptive or compact), parses headers and reconstructs rows, then un-flattens to nested objects.',
             ],
             callout: {
-              title: 'Per-technique breakdown',
-              text: 'Schema Decoupling: eliminates key name repetition (biggest impact on large datasets). Block-Mode: eliminates table IDs per row. Base36: compacts IDs and numeric metrics ~50%. Prefix Seeding: compacts strings with common roots. Constants: eliminates fixed-value columns. Sequences: eliminates sequential columns. Defaults + Trailing Trim: omits frequent values. RLE: collapses repeated rows to one line.',
+              title: 'On-error fallback',
+              text: 'Encoding runs in try/catch: if the chosen mode fails on an odd shape, LOON falls back to compat (JSON-hybrid), guaranteeing valid output.',
             },
           },
         },
@@ -261,12 +261,12 @@ export const INFO_DATA = {
           content: {
             title: 'Architecture Diagrams',
             body: [
-              'PlantUML diagrams are in docs/diagrams/ and cover three views: class structure (class-diagram.puml), entity-relationship model (er-diagram.puml), and full encode/decode flow (flow-diagram.puml).',
-              'To render them: use the VS Code PlantUML extension, the PlantUML online server, or run a local PlantUML server. Diagrams are kept in sync with the source code manually and reflect the current v3.5 architecture.',
+              'PlantUML diagrams live in LOON/docs/diagrams/: general and core architecture, round-trip sequence, processing flow, classes, layers and the benchmark dataset setup.',
+              'Render them with the VS Code PlantUML extension or a PlantUML server. They reflect the current 3-mode architecture (full/llm/compact) + compat.',
             ],
             callout: {
-              title: 'Key flow diagram',
-              text: 'The flow-diagram.puml describes the complete cycle: JSON input → Encoder (State Check → Mode Detection → Header Generation → Row Emission) → TRON string → Decoder (Header Parse → StateManager → Row Reconstruction → Base36/Prefix expansion) → JSON output bit-identical to the original.',
+              title: 'Key view',
+              text: 'The round-trip sequence diagram summarizes the cycle: toLOON() (flatten → selectMode → encode) → LOON string → fromLOON() (auto-detect → parse → reconstruct → unflatten) → identical JSON.',
             },
           },
         },

@@ -1,62 +1,68 @@
 export const HOME_DATA = {
   es: {
-    tagline: 'Token Reduction Format · v1.0',
-    title: 'TRON',
-    subtitle: 'Middleware de compresión adaptativa para LLMs',
-    description: 'TRON comprime tus objetos JSON en un stream altamente denso.',
-    ctaPrimary: 'Leer la tesis',
-    ctaSecondary: 'Abrir playground'
+    tagline: 'LLM-Optimized Object Notation · v1.0',
+    title: 'LOON',
+    subtitle: 'Serialización token-eficiente para pipelines de LLM',
+    description: 'LOON comprime tus objetos JSON en un formato denso y legible por LLMs.',
+    ctaPrimary: 'Leer la documentación',
+    ctaSecondary: 'Abrir playground',
+    ctaSpec: 'Descargar spec'
   },
   en: {
-    tagline: 'Token Reduction Format · v1.0',
-    title: 'TRON',
-    subtitle: 'Adaptive compression middleware for LLMs',
-    description: 'TRON compresses your JSON objects into a highly dense stream.',
-    ctaPrimary: 'Read the thesis',
-    ctaSecondary: 'Open playground'
+    tagline: 'LLM-Optimized Object Notation · v1.0',
+    title: 'LOON',
+    subtitle: 'Token-efficient serialization for LLM pipelines',
+    description: 'LOON compresses your JSON objects into a dense, LLM-readable format.',
+    ctaPrimary: 'Read the docs',
+    ctaSecondary: 'Open playground',
+    ctaSpec: 'Download spec'
   }
 }
 
 export const PLAYGROUND_DATA = {
   es: {
     title: 'Playground',
-    subtitle: 'Prueba el Encoder de TRON en tiempo real.',
+    subtitle: 'Prueba el encoder de LOON en tiempo real (corre en tu navegador).',
     btnReset: 'Restablecer',
-    btnExec: 'Ejecutar transpilación',
+    btnExec: 'Codificar',
     inputTitle: 'Entrada (JSON)',
-    outputTitle: 'Salida (TRON)',
-    savedBadge: 'tokens ahorrados'
+    outputTitle: 'Salida (LOON)',
+    outputPlaceholder: 'Pulsa "Codificar" para ver la salida LOON…',
+    savedBadge: 'tokens (aprox.)',
+    errorLabel: 'Error'
   },
   en: {
     title: 'Playground',
-    subtitle: 'Test the TRON Encoder in real-time.',
+    subtitle: 'Test the LOON encoder in real time (runs in your browser).',
     btnReset: 'Reset',
-    btnExec: 'Run Transpilation',
+    btnExec: 'Encode',
     inputTitle: 'Input (JSON)',
-    outputTitle: 'Output (TRON)',
-    savedBadge: 'tokens saved'
+    outputTitle: 'Output (LOON)',
+    outputPlaceholder: 'Press "Encode" to see the LOON output…',
+    savedBadge: 'tokens (approx.)',
+    errorLabel: 'Error'
   }
 }
 
 export const COMMONS = {
   es: {
     docsPath: 'Docs',
-    infoPath: 'Info',
+    infoPath: 'Acerca de',
     navLinks: [
       { label: 'Inicio', href: '/' },
       { label: 'Documentación', href: '/docs' },
       { label: 'Playground', href: '/playground' },
-      { label: 'Info', href: '/info' }
+      { label: 'Acerca de', href: '/info' }
     ]
   },
   en: {
     docsPath: 'Docs',
-    infoPath: 'Info',
+    infoPath: 'About',
     navLinks: [
       { label: 'Home', href: '/' },
       { label: 'Docs', href: '/docs' },
       { label: 'Playground', href: '/playground' },
-      { label: 'Info', href: '/info' }
+      { label: 'About', href: '/info' }
     ]
   }
 }

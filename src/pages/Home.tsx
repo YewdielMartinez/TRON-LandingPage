@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "../hooks/useLanguage";
 import { HOME_DATA } from "../data/translations";
 
-const INSTALL_CMD = "npm install tron-core";
+const INSTALL_CMD = "npm install loon-core";
 
 export function Home() {
   const { lang } = useLanguage();
@@ -110,6 +110,14 @@ export function Home() {
           <Link to="/playground" className="btn-ghost" style={{ display: "inline-block" }}>
             {content.ctaSecondary}
           </Link>
+          <a
+            href="/loon-spec.md"
+            download="loon-spec.md"
+            className="btn-ghost"
+            style={{ display: "inline-block" }}
+          >
+            {content.ctaSpec}
+          </a>
         </div>
       </section>
     </main>
